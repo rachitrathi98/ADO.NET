@@ -6,7 +6,8 @@ namespace ADO.NetDemo
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            EmployeeRepository repository = new EmployeeRepository();
+            repository.GetAllEmployees();
         }
     }
 }
