@@ -8,6 +8,8 @@ namespace ADO.NetDemo
         {
             EmployeeRepository repository = new EmployeeRepository();
             repository.GetAllEmployees();
+            // Console.WriteLine(repository.AddEmployee(model) ? "Record inserted successfully " : "Failed");
+            Console.ReadLine();
         }
     }
 }
