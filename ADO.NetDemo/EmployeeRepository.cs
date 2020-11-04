@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Threading;
 
 namespace ADO.NetDemo
 {
@@ -36,8 +38,8 @@ namespace ADO.NetDemo
                             model.Tax = reader.GetDouble(9);
                             model.NetPay = reader.GetDouble(10);
                             model.StartDate = reader.GetDateTime(11);
-                            Console.WriteLine("{0},{1},{2}.{3}", model.EmployeeID, model.EmployeeName,model.PhoneNumber,model.Address);
-                           Console.WriteLine("\n");
+                            Console.WriteLine("{0},{1},{2}.{3}", model.EmployeeID, model.EmployeeName, model.PhoneNumber, model.Address);
+                            Console.WriteLine("\n");
                         }
                     }
                     else
@@ -57,6 +59,54 @@ namespace ADO.NetDemo
             finally
             {
                 this.connection.Close();
+            }
+        }
+        /// <summary>
+        /// UC2 Add Employee Using Stored Procedures
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public bool AddEmployee(EmployeeModel model)
+        {
+            try
+            {
+                using (connection)
+                {
+                    connection = new SqlConnection(connectionString);
+                    SqlCommand command = new SqlCommand("dbo.SpAddEmployeeDetails", connection);
+                    connection.Open();
+
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@EmpName", model.EmployeeName);
+                    command.Parameters.AddWithValue("@EmpPhoneNumber", model.PhoneNumber);
+                    command.Parameters.AddWithValue("@EmpAddress", model.Address);
+                    command.Parameters.AddWithValue("@Department", model.Department);
+                    command.Parameters.AddWithValue("@Gender", model.Gender);
+                    command.Parameters.AddWithValue("@BasicPay", model.BasicPay);
+                    command.Parameters.AddWithValue("@Deductions", model.Deductions);
+                    command.Parameters.AddWithValue("@TaxablePay", model.TaxablePay);
+                    command.Parameters.AddWithValue("@Tax", model.Tax);
+                    command.Parameters.AddWithValue("@NetPay", model.NetPay);
+                    command.Parameters.AddWithValue("@StartDate", model.StartDate);
+       
+                    var result = command.ExecuteNonQuery();
+                    //this.connection.Close();
+                    if (result != 0)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                connection.Close();
+                return false;
+            }
+            finally
+            {
+                connection.Close();
             }
         }
     }
