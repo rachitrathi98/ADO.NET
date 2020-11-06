@@ -4,6 +4,9 @@ using System.Text;
 
 namespace ADO.NetDemo
 {
+    /// <summary>
+    /// Getters and Setters for Salary Model
+    /// </summary>
     public class SalaryDetailModel
     {
         public int EmployeeId

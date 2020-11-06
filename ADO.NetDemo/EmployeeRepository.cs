@@ -11,9 +11,13 @@ namespace ADO.NetDemo
     {
         public static string connectionString = "Data Source=(localdb)\\MSSQLLocalDB; Initial Catalog =payroll_service; User ID = racrathi; Password=Rachit123*";
         SqlConnection connection = new SqlConnection(connectionString);
+        /// <summary>
+        /// UC1: Gets deatils of all employees.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public void GetAllEmployees()
         {
-           EmployeeModel model = new EmployeeModel();
+            EmployeeModel model = new EmployeeModel();
             try
             {
                 using (connection)
@@ -53,7 +57,7 @@ namespace ADO.NetDemo
             catch (Exception e)
             {
                 throw new Exception(e.Message);
-               
+
 
             }
             finally
@@ -62,7 +66,7 @@ namespace ADO.NetDemo
             }
         }
         /// <summary>
-        /// UC2 Add Employee Using Stored Procedures
+        /// UC2: Add Employee Using Stored Procedures
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -88,7 +92,7 @@ namespace ADO.NetDemo
                     command.Parameters.AddWithValue("@Tax", model.Tax);
                     command.Parameters.AddWithValue("@NetPay", model.NetPay);
                     command.Parameters.AddWithValue("@StartDate", model.StartDate);
-       
+
                     var result = command.ExecuteNonQuery();
                     //this.connection.Close();
                     if (result != 0)
@@ -109,6 +113,11 @@ namespace ADO.NetDemo
                 connection.Close();
             }
         }
+        /// <summary>
+        ///UC3: Updates the employee using Stored Procedure.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         public int UpdateEmployee(SalaryDetailModel model)
         {
             int salary = 0;
@@ -157,6 +166,52 @@ namespace ADO.NetDemo
                 Console.WriteLine(e.Message);
                 connection.Close();
                 return 0;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        /// <summary>
+        /// UC5: Retrieves the employee based on start date using Stored Procedure.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        public void RetrieveEmployeeBasedOnStartDate(EmployeeModel model)
+        {
+            try
+            {
+                connection = new SqlConnection(connectionString);
+                SqlCommand command = new SqlCommand("Sp_RetrieveEmployeeBasedOnStartDate", connection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue("@StartDate", model.StartDate);
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        model.EmployeeID = reader.GetInt32(0);
+                        model.EmployeeName = reader.GetString(1);
+                        model.Address = reader.GetString(2);
+                        model.Department = reader.GetString(3);
+                        model.BasicPay = reader.GetInt32(4);
+                        model.StartDate = reader.GetDateTime(5);
+                        Console.WriteLine("{0},{1},{2},{3},{4},{5}", model.EmployeeID, model.EmployeeName, model.Address, model.Department, model.BasicPay, model.StartDate);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No rows Found");
+                }
+                reader.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                connection.Close();
             }
             finally
             {
