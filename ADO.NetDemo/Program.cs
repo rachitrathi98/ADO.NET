@@ -39,6 +39,13 @@ namespace ADO.NetDemo
             };
             repository.RetrieveEmployeeBasedOnStartDate(model1);
 
+            Console.WriteLine("Retrieving Sum Avg Min Max from Employee");
+            EmployeeModel model2 = new EmployeeModel()
+            {
+                Gender = "F"
+            };
+            repository.FindSumAvgMinMaxSalaryOfEmployee(model2);
+
         }
     }
 }
